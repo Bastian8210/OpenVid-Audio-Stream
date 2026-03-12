@@ -1,98 +1,89 @@
-OpenVid – Stream Windows Audio to iPhone
-<p align="center"> <img src="openvid/assets/openvid-banner.svg" alt="OpenVid banner" width="100%" /> </p> <p align="center"> <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white" alt="Python" /> <img src="https://img.shields.io/badge/Platform-Windows%2010%2F11-0078D6?logo=windows&logoColor=white" alt="Windows" /> <img src="https://img.shields.io/badge/Client-iOS%20Safari-000000?logo=apple&logoColor=white" alt="iOS Safari" /> <img src="https://img.shields.io/badge/WebRTC-Low%20Latency-FF6B00?logo=webrtc&logoColor=white" alt="WebRTC" /> </p>
+﻿# OpenVid Audio Stream
 
-OpenVid lets you stream your Windows system audio or microphone to an iPhone using Safari, with near‑zero latency. Perfect for remote monitoring, streaming, or mobile listening.
+<p align="center">
+  <img src="openvid/assets/openvid-banner.svg" alt="OpenVid banner" width="100%" />
+</p>
 
-🔍 Discover OpenVid
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/Platform-Windows%2010%2F11-0078D6?logo=windows&logoColor=white" alt="Windows" />
+  <img src="https://img.shields.io/badge/Client-iOS%20Safari-000000?logo=apple&logoColor=white" alt="iOS Safari" />
+  <img src="https://img.shields.io/badge/WebRTC-Low%20Latency-FF6B00?logo=webrtc&logoColor=white" alt="WebRTC" />
+</p>
 
-Keywords: Windows audio streaming, iPhone audio, WebRTC audio, loopback, virtual audio cable, low latency streaming.
+<p align="center">
+  <b>Stream system audio from your Windows PC to your iPhone with near‑zero latency.</b>
+</p>
 
-Use Cases: Stream PC audio to mobile, monitor music or game audio on your phone, remote audio testing.
+---
 
-No iPhone app required: Works fully in Safari.
+## Why OpenVid
+- **Fast**: WebRTC + Opus keeps latency tight.
+- **Simple**: One local Python service, one Safari page.
+- **Flexible**: Wi‑Fi or USB tethered, mic or loopback.
+- **No installs on iPhone**: Pure Safari playback.
 
-Why OpenVid?
-
-Fast: WebRTC + Opus codec ensures ultra-low latency.
-
-Simple: One Python service, one Safari page.
-
-Flexible: Stream via Wi-Fi or USB tethered. Capture mic or system audio.
-
-Zero iPhone installs: Works in any modern Safari browser.
-
-Quick Start (No venv)
+## Quick Start (No venv)
+```powershell
 cd python_service
 pip install -r requirements.txt
 python app.py --source loopback
+```
 
-The server prints Host page (open on PC) and Listen page (open on iPhone).
+The server prints:
+- **Host page** (open on the PC)
+- **Listen page** (open on the iPhone)
 
-Scan the QR code from the host page to your iPhone. Tap Start Stream to begin.
+Open the host page on the PC and scan the QR to open the listen page on your iPhone. Tap **Start Stream** on the iPhone.
 
-Optional: Setup Loopback
+## Optional (Recommended for Loopback)
+If your system has no loopback device (e.g., no Stereo Mix), install a virtual audio cable and set it as the default output device. This gives the app a reliable loopback source.
 
-If your system lacks a loopback device (e.g., no Stereo Mix):
+- VB‑Audio Virtual Cable: https://vb-audio.com/Cable/
 
-Install a virtual audio cable.
+## How It Works
+1. PC captures audio with `sounddevice`.
+2. WebRTC transports audio to iPhone using Opus.
+3. iOS plays the stream after a user tap.
 
-VB‑Audio Virtual Cable: https://vb-audio.com/Cable/
-
-Set it as the default output device. This ensures a reliable loopback source.
-
-How OpenVid Works
-
-PC captures audio via sounddevice.
-
-Audio is sent over WebRTC using the Opus codec.
-
-iOS Safari plays the audio after user interaction.
-
-Usage
-
+## Usage
 List devices:
-
+```powershell
 python app.py --list-devices
+```
 
 Stream system audio:
-
+```powershell
 python app.py --source loopback --device <index>
+```
 
 Stream microphone:
-
+```powershell
 python app.py --source mic
+```
 
-Adjust latency:
-
+Tune latency:
+```powershell
 python app.py --blocksize 480
+```
 
-Arguments
+Arguments:
+- `--source mic|loopback` selects microphone vs system audio.
+- `--device` chooses a specific sounddevice index.
+- `--channels 1|2` selects mono or stereo capture.
+- `--blocksize` controls latency. Smaller values reduce latency but may glitch.
 
-Argument	Description
-`--source mic	loopback`
---device	Sounddevice index
-`--channels 1	2`
---blocksize	Smaller = lower latency, may glitch; larger = more stable
-Troubleshooting
+## Troubleshooting
+- **No audio on iPhone**: Make sure you tapped **Start Stream** on the iPhone.
+- **No loopback device**: Enable Stereo Mix or install a virtual audio cable.
+- **Silent capture**: Check the Stereo Mix level meter moves while audio plays.
+- **Glitches**: Increase `--blocksize` (e.g. `960 -> 1920`).
+- **Screen sleep**: Keep the iPhone screen awake to avoid audio pause.
 
-No audio on iPhone: Make sure Start Stream is tapped.
+## Compatibility
+- Windows 10/11 (sender)
+- iOS Safari (receiver)
 
-No loopback device: Enable Stereo Mix or install a virtual audio cable.
+## Notes
+This is a local‑network tool. It does not require external STUN/TURN servers. For remote streaming across the internet, a TURN server would be required.
 
-Silent capture: Check the Stereo Mix meter while audio plays.
-
-Glitches: Increase --blocksize (e.g., 960 → 1920).
-
-Screen sleep: Keep the iPhone awake to prevent audio pause.
-
-Compatibility
-
-Sender: Windows 10 / 11
-
-Receiver: iOS Safari
-
-Note: OpenVid works on your local network. Streaming over the internet requires a TURN server.
-
-Keywords for Search
-
-Windows audio streaming, iPhone Safari audio, WebRTC audio stream, loopback audio, virtual audio cable, low latency audio, PC to iPhone audio.
