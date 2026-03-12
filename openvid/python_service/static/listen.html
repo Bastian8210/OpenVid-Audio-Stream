@@ -1,0 +1,43 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OpenVid Listener</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div class="badge">OpenVid Listen</div>
+        <h1>Tap to listen.</h1>
+        <p class="lede">
+          This page plays the live audio stream from your PC.
+        </p>
+      </header>
+
+      <section class="panel">
+        <div class="status" id="status">Idle</div>
+        <div class="controls">
+          <button id="startBtn" class="primary">Start Stream</button>
+          <button id="stopBtn" class="ghost" disabled>Stop</button>
+        </div>
+        <div class="meta" id="meta"></div>
+        <div class="debug" id="debugLog"></div>
+      </section>
+
+      <section class="panel tips">
+        <h2>Listening tips</h2>
+        <ul>
+          <li>Turn up your iPhone volume.</li>
+          <li>Keep the screen awake to avoid iOS pausing audio.</li>
+          <li>If silent, stop and start the stream again.</li>
+        </ul>
+      </section>
+
+      <audio id="player" autoplay playsinline></audio>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,57 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OpenVid Host</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div class="badge">OpenVid Host</div>
+        <h1>Stream audio from your PC.</h1>
+        <p class="lede">
+          Keep this page open on the PC. Scan the QR code with your iPhone to
+          open the listener page.
+        </p>
+      </header>
+
+      <section class="panel">
+        <div class="status" id="status">Ready</div>
+        <div class="meta" id="hostMeta"></div>
+      </section>
+
+      <section class="panel qr-panel">
+        <h2>Scan to listen</h2>
+        <p class="qr-text">Open the listener page on your iPhone.</p>
+        <div class="qr-wrap">
+          <img id="qrImage" src="/qr" alt="QR code to open the listener page" />
+        </div>
+        <div class="meta" id="listenLink"></div>
+      </section>
+
+      <section class="panel tips">
+        <h2>Connection options</h2>
+        <ul>
+          <li>Wi-Fi: Ensure your PC and iPhone are on the same network.</li>
+          <li>
+            Wired: Connect the iPhone by USB and enable Personal Hotspot for a
+            direct, low-latency link.
+          </li>
+        </ul>
+      </section>
+
+      <section class="panel tips">
+        <h2>Audio tips</h2>
+        <ul>
+          <li>Use the loopback source to stream system audio (default).</li>
+          <li>Lower blocksize for less latency; increase if you hear glitches.</li>
+          <li>Keep the screen awake to avoid iOS suspending audio playback.</li>
+        </ul>
+      </section>
+    </main>
+
+    <script src="/static/host.js"></script>
+  </body>
+</html>

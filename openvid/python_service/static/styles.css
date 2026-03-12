@@ -1,0 +1,262 @@
+﻿:root {
+  --bg: #0b1320;
+  --bg-deep: #070b12;
+  --panel: rgba(16, 26, 40, 0.72);
+  --panel-border: rgba(133, 164, 191, 0.18);
+  --text: #eaf2f8;
+  --muted: #9db3c7;
+  --accent: #2ee6a7;
+  --accent-dark: #1bbf88;
+  --shadow: rgba(0, 0, 0, 0.4);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Space Grotesk", "IBM Plex Sans", "Segoe UI", sans-serif;
+  color: var(--text);
+  background: radial-gradient(1200px 800px at 10% 10%, #1b2b44 0%, transparent 65%),
+    radial-gradient(900px 700px at 90% 15%, #152539 0%, transparent 60%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 18px 48px;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.25;
+  z-index: 0;
+  animation: drift 16s ease-in-out infinite;
+}
+
+body::before {
+  background: #2ee6a7;
+  top: -120px;
+  left: -120px;
+}
+
+body::after {
+  background: #3d6ef2;
+  bottom: -140px;
+  right: -120px;
+  animation-delay: -6s;
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  width: 100%;
+  display: grid;
+  gap: 20px;
+}
+
+.hero {
+  display: grid;
+  gap: 12px;
+  animation: rise 700ms ease-out both;
+}
+
+.badge {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(46, 230, 167, 0.15);
+  color: var(--accent);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(28px, 5vw, 44px);
+  line-height: 1.05;
+}
+
+.lede {
+  margin: 0;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 20px 50px var(--shadow);
+  backdrop-filter: blur(16px);
+  animation: rise 800ms ease-out both;
+}
+
+.status {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+button {
+  border: none;
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.primary {
+  background: linear-gradient(120deg, var(--accent), var(--accent-dark));
+  color: #042016;
+  box-shadow: 0 10px 20px rgba(46, 230, 167, 0.35);
+}
+
+button.ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid rgba(234, 242, 248, 0.2);
+}
+
+button:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.3);
+}
+
+.meta {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.debug {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px dashed rgba(234, 242, 248, 0.25);
+  color: rgba(234, 242, 248, 0.8);
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: rgba(10, 16, 24, 0.4);
+}
+
+.qr-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.qr-text {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.qr-wrap {
+  width: 200px;
+  height: 200px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: grid;
+  place-items: center;
+}
+
+#qrImage {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 6px;
+  image-rendering: pixelated;
+}
+
+.qr-link {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.qr-link:hover {
+  text-decoration: underline;
+}
+
+.tips h2 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+}
+
+.tips ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  display: grid;
+  gap: 6px;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+  50% {
+    transform: translateY(30px) translateX(-20px);
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    padding: 24px 16px 36px;
+  }
+
+  .panel {
+    padding: 16px;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .qr-wrap {
+    width: 160px;
+    height: 160px;
+  }
+}

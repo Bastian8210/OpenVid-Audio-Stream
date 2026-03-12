@@ -1,0 +1,7 @@
+﻿aiohttp>=3.9.0
+aiortc>=1.6.0
+av>=11.0.0
+numpy>=1.26.0
+qrcode>=7.4.2
+rich>=13.7.1
+sounddevice>=0.4.6

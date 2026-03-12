@@ -1,0 +1,39 @@
+﻿<svg width="1200" height="360" viewBox="0 0 1200 360" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="OpenVid banner">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1320"/>
+      <stop offset="50%" stop-color="#13243a"/>
+      <stop offset="100%" stop-color="#0b1320"/>
+      <animate attributeName="x1" values="0;0.2;0" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="y1" values="0;0.1;0" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="1;0.8;1" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="y2" values="1;0.9;1" dur="12s" repeatCount="indefinite"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(980 60) rotate(120) scale(300 300)">
+      <stop offset="0%" stop-color="#2ee6a7" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#2ee6a7" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="360" fill="url(#bg)"/>
+  <rect width="1200" height="360" fill="url(#glow)"/>
+
+  <g opacity="0.25">
+    <path d="M-40 250 C 120 190, 240 190, 360 250 C 480 310, 600 310, 720 250 C 840 190, 960 190, 1080 250 C 1200 310, 1320 310, 1400 250" stroke="#2ee6a7" stroke-width="2" fill="none">
+      <animate attributeName="d" dur="8s" repeatCount="indefinite"
+        values="M-40 250 C 120 190, 240 190, 360 250 C 480 310, 600 310, 720 250 C 840 190, 960 190, 1080 250 C 1200 310, 1320 310, 1400 250;
+                M-40 240 C 120 280, 240 280, 360 240 C 480 200, 600 200, 720 240 C 840 280, 960 280, 1080 240 C 1200 200, 1320 200, 1400 240;
+                M-40 250 C 120 190, 240 190, 360 250 C 480 310, 600 310, 720 250 C 840 190, 960 190, 1080 250 C 1200 310, 1320 310, 1400 250"/>
+    </path>
+  </g>
+
+  <g font-family="'Segoe UI', 'Inter', sans-serif" fill="#eaf2f8">
+    <text x="80" y="160" font-size="54" font-weight="700">OpenVid</text>
+    <text x="80" y="205" font-size="20" fill="#9db3c7">Low-latency system audio streaming from Windows to iPhone</text>
+  </g>
+
+  <g>
+    <rect x="80" y="230" width="240" height="38" rx="19" fill="#2ee6a7"/>
+    <text x="100" y="255" font-size="16" font-family="'Segoe UI', 'Inter', sans-serif" fill="#042016" font-weight="600">WebRTC · Opus · Local</text>
+  </g>
+</svg>
