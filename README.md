@@ -87,3 +87,8 @@ Arguments:
 ## Notes
 This is a local‑network tool. It does not require external STUN/TURN servers. For remote streaming across the internet, a TURN server would be required.
 
+
+## Keywords for Search
+
+Windows audio streaming, iPhone Safari audio, WebRTC audio stream, loopback audio, virtual audio cable, low latency audio, PC to iPhone audio.
+
