@@ -1,7 +1,7 @@
 ﻿# OpenVid Audio Stream
 
 <p align="center">
-  <img src="assets/openvid-banner.svg" alt="OpenVid banner" width="100%" />
+  <img src="openvid/assets/openvid-banner.svg" alt="OpenVid banner" width="100%" />
 </p>
 
 <p align="center">
