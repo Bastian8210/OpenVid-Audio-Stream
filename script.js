@@ -1,271 +1,250 @@
 /* =============================================
-   GLITCH CLUB AARHUS — JAVASCRIPT
+   GLITCH CLUB AARHUS — INDUSTRIAL JS
    ============================================= */
 
-// ── Custom cursor ──────────────────────────────────────────────
-document.addEventListener('mousemove', (e) => {
-  document.documentElement.style.setProperty('--cx', e.clientX + 'px');
-  document.documentElement.style.setProperty('--cy', e.clientY + 'px');
-});
-
-// ── Background grid canvas ─────────────────────────────────────
+// ── Background canvas: static / concrete damage ───────────────
 const bgCanvas = document.getElementById('bgCanvas');
-const bgCtx = bgCanvas.getContext('2d');
-
-let particles = [];
-const PARTICLE_COUNT = 80;
+const bgCtx    = bgCanvas.getContext('2d');
 
 function resizeBg() {
   bgCanvas.width  = window.innerWidth;
   bgCanvas.height = window.innerHeight;
 }
-
-class Particle {
-  constructor() { this.reset(); }
-  reset() {
-    this.x  = Math.random() * bgCanvas.width;
-    this.y  = Math.random() * bgCanvas.height;
-    this.vx = (Math.random() - 0.5) * 0.4;
-    this.vy = (Math.random() - 0.5) * 0.4;
-    this.size    = Math.random() * 1.5 + 0.5;
-    this.opacity = Math.random() * 0.6 + 0.2;
-    this.color   = Math.random() > 0.5 ? '#00f5ff' : '#b400ff';
-  }
-  update() {
-    this.x += this.vx;
-    this.y += this.vy;
-    if (this.x < 0 || this.x > bgCanvas.width ||
-        this.y < 0 || this.y > bgCanvas.height) this.reset();
-  }
-  draw() {
-    bgCtx.save();
-    bgCtx.globalAlpha = this.opacity;
-    bgCtx.fillStyle   = this.color;
-    bgCtx.shadowColor = this.color;
-    bgCtx.shadowBlur  = 6;
-    bgCtx.beginPath();
-    bgCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    bgCtx.fill();
-    bgCtx.restore();
-  }
-}
-
-function initParticles() {
-  particles = [];
-  for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
-}
-
-function drawConnections() {
-  for (let i = 0; i < particles.length; i++) {
-    for (let j = i + 1; j < particles.length; j++) {
-      const dx   = particles[i].x - particles[j].x;
-      const dy   = particles[i].y - particles[j].y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 120) {
-        bgCtx.save();
-        bgCtx.globalAlpha = (1 - dist / 120) * 0.15;
-        bgCtx.strokeStyle = '#00f5ff';
-        bgCtx.lineWidth   = 0.5;
-        bgCtx.beginPath();
-        bgCtx.moveTo(particles[i].x, particles[i].y);
-        bgCtx.lineTo(particles[j].x, particles[j].y);
-        bgCtx.stroke();
-        bgCtx.restore();
-      }
-    }
-  }
-}
-
-function animateBg() {
-  bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
-  drawConnections();
-  particles.forEach(p => { p.update(); p.draw(); });
-  requestAnimationFrame(animateBg);
-}
-
 resizeBg();
-initParticles();
-animateBg();
-window.addEventListener('resize', () => { resizeBg(); initParticles(); });
+window.addEventListener('resize', resizeBg);
 
-// ── Hero waveform ──────────────────────────────────────────────
+let staticFrame = 0;
+
+function drawStatic() {
+  const W = bgCanvas.width;
+  const H = bgCanvas.height;
+  bgCtx.clearRect(0, 0, W, H);
+  staticFrame++;
+
+  // Sparse horizontal scan damage lines
+  const lineCount = 4 + Math.floor(Math.random() * 5);
+  for (let i = 0; i < lineCount; i++) {
+    const y     = Math.random() * H;
+    const len   = 30 + Math.random() * 200;
+    const x     = Math.random() * (W - len);
+    const alpha = 0.04 + Math.random() * 0.08;
+    bgCtx.fillStyle = `rgba(212,255,0,${alpha})`;
+    bgCtx.fillRect(x, y, len, 1 + Math.random());
+  }
+
+  // Occasional bright blowout strip
+  if (Math.random() < 0.04) {
+    const y = Math.random() * H;
+    const h = 1 + Math.floor(Math.random() * 3);
+    bgCtx.fillStyle = `rgba(212,255,0,${0.12 + Math.random() * 0.1})`;
+    bgCtx.fillRect(0, y, W, h);
+  }
+
+  // Sparse dim grid
+  bgCtx.strokeStyle = 'rgba(60,60,50,0.18)';
+  bgCtx.lineWidth   = 1;
+  const step = 80;
+  for (let x = 0; x < W; x += step) {
+    bgCtx.beginPath();
+    bgCtx.moveTo(x, 0);
+    bgCtx.lineTo(x, H);
+    bgCtx.stroke();
+  }
+  for (let y = 0; y < H; y += step) {
+    bgCtx.beginPath();
+    bgCtx.moveTo(0, y);
+    bgCtx.lineTo(W, y);
+    bgCtx.stroke();
+  }
+
+  requestAnimationFrame(drawStatic);
+}
+drawStatic();
+
+// ── Hero waveform: harsh sawtooth/square hybrid ────────────────
 const waveCanvas = document.getElementById('waveCanvas');
 const waveCtx    = waveCanvas.getContext('2d');
-let waveT = 0;
+let   waveT      = 0;
 
 function resizeWave() {
   waveCanvas.width  = waveCanvas.offsetWidth;
   waveCanvas.height = waveCanvas.offsetHeight;
 }
+resizeWave();
+window.addEventListener('resize', resizeWave);
 
 function drawWave() {
   const W = waveCanvas.width;
   const H = waveCanvas.height;
   waveCtx.clearRect(0, 0, W, H);
-  waveT += 0.015;
+  waveT += 0.022;
 
-  // Primary wave
-  const grad = waveCtx.createLinearGradient(0, 0, W, 0);
-  grad.addColorStop(0,   'transparent');
-  grad.addColorStop(0.2, 'rgba(0,245,255,0.6)');
-  grad.addColorStop(0.8, 'rgba(180,0,255,0.6)');
-  grad.addColorStop(1,   'transparent');
-
-  waveCtx.strokeStyle = grad;
-  waveCtx.lineWidth   = 1.5;
-  waveCtx.shadowColor = '#00f5ff';
-  waveCtx.shadowBlur  = 8;
+  // Main harsh waveform
+  waveCtx.lineWidth   = 2;
+  waveCtx.strokeStyle = 'rgba(212,255,0,0.7)';
+  waveCtx.shadowColor = 'rgba(212,255,0,0.8)';
+  waveCtx.shadowBlur  = 4;
   waveCtx.beginPath();
 
-  for (let x = 0; x <= W; x++) {
-    const t  = x / W;
-    const y1 = Math.sin(t * 12 + waveT * 2.5) * 18;
-    const y2 = Math.sin(t * 7  + waveT * 1.8) * 12;
-    const y3 = Math.sin(t * 20 + waveT * 3.2) * 6;
-    const y  = H / 2 + y1 + y2 + y3;
-    x === 0 ? waveCtx.moveTo(x, y) : waveCtx.lineTo(x, y);
+  const segs = 180;
+  for (let i = 0; i <= segs; i++) {
+    const t = i / segs;
+    const x = t * W;
+    // Square-ish wave with harmonics
+    const saw  = ((((t * 8 + waveT) % 1) - 0.5) * 2);       // sawtooth
+    const sq   = Math.sign(Math.sin(t * 20 + waveT * 3));    // square
+    const sin1 = Math.sin(t * 30  + waveT * 2.1) * 0.3;
+    const combined = (saw * 0.5 + sq * 0.3 + sin1) * 28;
+    const y = H * 0.55 + combined;
+    i === 0 ? waveCtx.moveTo(x, y) : waveCtx.lineTo(x, y);
   }
   waveCtx.stroke();
 
-  // Mirrored fill
-  waveCtx.globalAlpha = 0.08;
-  waveCtx.fillStyle   = '#00f5ff';
+  // Ghost second wave (red)
+  waveCtx.lineWidth   = 1;
+  waveCtx.strokeStyle = 'rgba(255,34,0,0.25)';
+  waveCtx.shadowColor = 'rgba(255,34,0,0.5)';
+  waveCtx.shadowBlur  = 3;
   waveCtx.beginPath();
-  for (let x = 0; x <= W; x++) {
-    const t  = x / W;
-    const y1 = Math.sin(t * 12 + waveT * 2.5) * 18;
-    const y2 = Math.sin(t * 7  + waveT * 1.8) * 12;
-    const y3 = Math.sin(t * 20 + waveT * 3.2) * 6;
-    const y  = H / 2 + y1 + y2 + y3;
-    x === 0 ? waveCtx.moveTo(x, y) : waveCtx.lineTo(x, y);
+  for (let i = 0; i <= segs; i++) {
+    const t = i / segs;
+    const x = t * W;
+    const val = Math.sign(Math.sin(t * 15 + waveT * 1.7 + 1)) * 18;
+    const y   = H * 0.55 + val;
+    i === 0 ? waveCtx.moveTo(x, y) : waveCtx.lineTo(x, y);
   }
-  waveCtx.lineTo(W, H);
-  waveCtx.lineTo(0, H);
-  waveCtx.closePath();
-  waveCtx.fill();
-  waveCtx.globalAlpha = 1;
+  waveCtx.stroke();
+  waveCtx.shadowBlur = 0;
 
   requestAnimationFrame(drawWave);
 }
-
-resizeWave();
 drawWave();
-window.addEventListener('resize', resizeWave);
 
-// ── Frequency bars (about section) ────────────────────────────
+// ── Frequency bars ─────────────────────────────────────────────
 const freqContainer = document.getElementById('freqBars');
-const BAR_COUNT = 28;
+const BAR_COUNT = 30;
 for (let i = 0; i < BAR_COUNT; i++) {
   const bar = document.createElement('div');
   bar.className = 'freq-bar';
-  const duration = (Math.random() * 0.6 + 0.5).toFixed(2) + 's';
-  const delay    = (Math.random() * 0.5).toFixed(2) + 's';
-  bar.style.setProperty('--duration', duration);
-  bar.style.animationDelay = delay;
+  const dur = (Math.random() * 0.5 + 0.25).toFixed(2) + 's';
+  const del = (Math.random() * 0.4).toFixed(2) + 's';
+  bar.style.setProperty('--duration', dur);
+  bar.style.animationDelay = del;
   freqContainer.appendChild(bar);
 }
 
-// ── Intersection observer — card reveal ───────────────────────
+// ── Event card reveal ──────────────────────────────────────────
 const cards = document.querySelectorAll('.event-card');
-const cardObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const delay = parseInt(entry.target.dataset.delay || 0);
-      setTimeout(() => entry.target.classList.add('visible'), delay);
-      cardObserver.unobserve(entry.target);
+const cardObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const d = parseInt(e.target.dataset.delay || 0);
+      setTimeout(() => e.target.classList.add('visible'), d);
+      cardObs.unobserve(e.target);
     }
   });
 }, { threshold: 0.1 });
-cards.forEach(card => cardObserver.observe(card));
+cards.forEach(c => cardObs.observe(c));
 
-// ── Counter animation ─────────────────────────────────────────
-function animateCounter(el, target, duration = 1800) {
+// ── Counter animation ──────────────────────────────────────────
+function animateCounter(el, target, dur = 1600) {
   let start = null;
   function step(ts) {
     if (!start) start = ts;
-    const progress = Math.min((ts - start) / duration, 1);
-    const ease     = 1 - Math.pow(1 - progress, 3);
-    el.textContent = Math.floor(ease * target);
-    if (progress < 1) requestAnimationFrame(step);
+    const p   = Math.min((ts - start) / dur, 1);
+    const val = Math.floor((1 - Math.pow(1 - p, 3)) * target);
+    el.textContent = val;
+    if (p < 1) requestAnimationFrame(step);
     else el.textContent = target;
   }
   requestAnimationFrame(step);
 }
 
-const statObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const el     = entry.target;
-      const target = parseInt(el.dataset.target);
-      animateCounter(el, target);
-      statObserver.unobserve(el);
+const statObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      animateCounter(e.target, parseInt(e.target.dataset.target));
+      statObs.unobserve(e.target);
     }
   });
 }, { threshold: 0.5 });
-document.querySelectorAll('.stat-num').forEach(el => statObserver.observe(el));
+document.querySelectorAll('.stat-num').forEach(el => statObs.observe(el));
 
-// ── Random glitch bursts on title ─────────────────────────────
+// ── Brutal glitch bursts on title ──────────────────────────────
 const glitchEl = document.querySelector('.glitch');
 function triggerGlitch() {
   if (!glitchEl) return;
-  const rnd = Math.random();
-  if (rnd > 0.7) {
-    glitchEl.style.transform = `translate(${(Math.random()-0.5)*6}px, ${(Math.random()-0.5)*3}px)`;
-    glitchEl.style.filter    = `hue-rotate(${Math.random()*60}deg)`;
+  if (Math.random() > 0.45) {
+    const offX = (Math.random() - 0.5) * 18;
+    const offY = (Math.random() - 0.5) * 8;
+    const skew = (Math.random() - 0.5) * 3;
+    glitchEl.style.transform  = `translate(${offX}px, ${offY}px) skewX(${skew}deg)`;
+    glitchEl.style.filter     = `hue-rotate(${Math.random()*90}deg) contrast(${1.2 + Math.random()*0.4})`;
+    glitchEl.style.opacity    = (0.6 + Math.random() * 0.4).toString();
+    const dur = 40 + Math.random() * 100;
     setTimeout(() => {
       glitchEl.style.transform = '';
       glitchEl.style.filter    = '';
-    }, 80 + Math.random() * 120);
+      glitchEl.style.opacity   = '';
+      // Double-hit
+      if (Math.random() > 0.5) {
+        setTimeout(() => {
+          glitchEl.style.transform = `translate(${-offX * 0.6}px, 0)`;
+          setTimeout(() => { glitchEl.style.transform = ''; }, 50);
+        }, 30);
+      }
+    }, dur);
   }
-  setTimeout(triggerGlitch, 1500 + Math.random() * 3000);
+  setTimeout(triggerGlitch, 800 + Math.random() * 2500);
 }
 triggerGlitch();
 
-// ── Nav scroll tint ───────────────────────────────────────────
+// ── Random screen-wide glitch tear ────────────────────────────
+const body = document.body;
+function screenTear() {
+  if (Math.random() > 0.7) {
+    body.style.transform      = `translateX(${(Math.random()-0.5)*5}px)`;
+    body.style.filter         = `brightness(${0.85 + Math.random()*0.3})`;
+    setTimeout(() => {
+      body.style.transform = '';
+      body.style.filter    = '';
+    }, 60 + Math.random() * 100);
+  }
+  setTimeout(screenTear, 3000 + Math.random() * 6000);
+}
+screenTear();
+
+// ── Nav scroll ─────────────────────────────────────────────────
 const nav = document.querySelector('.nav');
 window.addEventListener('scroll', () => {
   if (window.scrollY > 60) {
-    nav.style.background = 'rgba(0,0,0,0.96)';
-    nav.style.borderBottomColor = 'rgba(0,245,255,0.15)';
+    nav.style.background  = 'rgba(8,8,7,1)';
+    nav.style.borderColor = 'rgba(212,255,0,0.6)';
   } else {
-    nav.style.background = '';
-    nav.style.borderBottomColor = '';
+    nav.style.background  = '';
+    nav.style.borderColor = '';
   }
 }, { passive: true });
 
-// ── Mobile hamburger ──────────────────────────────────────────
+// ── Mobile hamburger ───────────────────────────────────────────
 const hamburger = document.getElementById('hamburger');
 const navLinks  = document.querySelector('.nav-links');
 hamburger && hamburger.addEventListener('click', () => {
   const open = navLinks.style.display === 'flex';
-  navLinks.style.display    = open ? 'none' : 'flex';
-  navLinks.style.flexDirection = 'column';
-  navLinks.style.position   = open ? '' : 'absolute';
-  navLinks.style.top        = open ? '' : '60px';
-  navLinks.style.left       = open ? '' : '0';
-  navLinks.style.right      = open ? '' : '0';
-  navLinks.style.background = open ? '' : 'rgba(0,0,0,0.97)';
-  navLinks.style.padding    = open ? '' : '1.5rem 5%';
-  navLinks.style.borderBottom = open ? '' : '1px solid rgba(0,245,255,0.1)';
+  navLinks.style.cssText = open ? '' :
+    'display:flex;flex-direction:column;position:absolute;top:60px;left:0;right:0;background:rgba(8,8,7,0.98);padding:1.5rem 5%;border-bottom:2px solid rgba(212,255,0,0.4);gap:1.2rem;';
 });
-
-// Close mobile nav on link click
 document.querySelectorAll('.nav-links a').forEach(a =>
-  a.addEventListener('click', () => {
-    navLinks.style.display = 'none';
-  })
+  a.addEventListener('click', () => { navLinks.style.cssText = ''; })
 );
 
-// ── Subtle RGB glitch on event cards hover ────────────────────
-document.querySelectorAll('.event-card').forEach(card => {
-  card.addEventListener('mouseenter', () => {
-    let count = 0;
-    const glitchInterval = setInterval(() => {
-      if (count++ > 4) { clearInterval(glitchInterval); card.style.filter = ''; return; }
-      card.style.filter = count % 2 === 0
-        ? 'hue-rotate(5deg) brightness(1.05)'
-        : 'hue-rotate(-5deg) brightness(0.98)';
-    }, 40);
-  });
-  card.addEventListener('mouseleave', () => { card.style.filter = ''; });
-});
+// ── Periodic flicker intensity spike ──────────────────────────
+const flickerEl = document.getElementById('flicker');
+function flickerSpike() {
+  if (Math.random() > 0.6) {
+    flickerEl.style.background = `rgba(212,255,0,${0.04 + Math.random()*0.08})`;
+    setTimeout(() => { flickerEl.style.background = ''; }, 80 + Math.random() * 200);
+  }
+  setTimeout(flickerSpike, 2000 + Math.random() * 5000);
+}
+flickerSpike();
